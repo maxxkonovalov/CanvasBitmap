@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SeekBar;
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements SoundPool.OnLoadC
             @Override
             public void onClick(View view) {
                 mp = MediaPlayer.create(MainActivity.this, R.raw.sova);
+                mp.setLooping(true);
 
                 if (mp.isPlaying() &&  mp != null){
                     Toast.makeText(MainActivity.this, "is playing", Toast.LENGTH_SHORT).show();
@@ -164,19 +166,23 @@ public class MainActivity extends AppCompatActivity implements SoundPool.OnLoadC
 
     private final Handler handler = new Handler();
     public void startPlayProgressUpdater() {
-        seekBar.setProgress(mp.getCurrentPosition());
+        if (mp != null) {
+            seekBar.setProgress(mp.getCurrentPosition());
+            Log.d("123", "!= null");
 
-        if (mp.isPlaying()) {
-            Runnable notification = new Runnable() {
-                public void run() {
-                    startPlayProgressUpdater();
-                }
-            };
-            handler.postDelayed(notification,50);
-        }else{
-            mp.pause();
-            //buttonPlayStop.setText(getString(R.string.play_str));
-            seekBar.setProgress(0);
+
+            if (mp.isPlaying()) {
+                Runnable notification = new Runnable() {
+                    public void run() {
+                        startPlayProgressUpdater();
+                    }
+                };
+                handler.postDelayed(notification, 1000);
+            } else {
+                mp.pause();
+                //buttonPlayStop.setText(getString(R.string.play_str));
+                seekBar.setProgress(0);
+            }
         }
     }
 
